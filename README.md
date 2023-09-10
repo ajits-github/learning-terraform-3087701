@@ -86,3 +86,30 @@ In summary, this Terraform script will:
 2. Create an EC2 instance using the fetched AMI.
 3. Create a security group and attach it to the instance.
 4. Define rules in the security group to allow inbound HTTP/HTTPS traffic and allow all outbound traffic.
+   
+-----------------------------------------------
+
+In Terraform, there's a distinction between **resources** and **data sources**:
+
+1. **Resource**:
+   - Represents an infrastructure component (like a virtual machine, security group, or database) that you want to create, manage, or destroy with Terraform.
+   - Terraform will track the state of this resource across runs, ensuring it matches what you've defined in your code. If the actual state in the infrastructure diverges from what's in the code, Terraform will make necessary changes to reconcile them.
+   - In the Terraform code, you use the `resource` block to define a resource.
+
+2. **Data Source**:
+   - Represents a way to fetch data or information from your cloud provider or other services which can then be used in your Terraform configurations.
+   - This is especially useful when you want to use existing infrastructure components or when you need data that isn't known ahead of time. 
+   - Terraform doesn't manage the lifecycle of data sources. Instead, it queries for the information as needed.
+   - In the Terraform code, you use the `data` block to define a data source.
+
+To provide a simple analogy:
+
+- Think of a **resource** as a plant you're growing in a garden. You plant it, care for it, and decide when to remove it.
+  
+- A **data source**, on the other hand, is like checking the weather. You're just getting information about the current state of things, but you aren't directly affecting or controlling the weather.
+
+In the Terraform file- main.tf:
+
+- `data "aws_ami" "app_ami"` fetches information about a specific Amazon Machine Image (AMI). It doesn't create or manage an AMI; it just provides details about one that already exists.
+
+- `resource "aws_instance" "blog"` defines an AWS EC2 instance that Terraform will create, update, or destroy based on the configuration.
