@@ -108,3 +108,4 @@ Note: Remember to set up secrets (`DOCKER_PASSWORD` and `DOCKER_USERNAME`) in yo
 This structure provides a high-level overview of how to organize and automate a machine learning project's deployment with Docker, CI/CD, and Terraform. In reality, each of these steps could be much more complex, depending on the specific requirements and constraints of the project.
 
 ---------------------------------------------
+
