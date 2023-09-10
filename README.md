@@ -1,28 +1,88 @@
-# Learning Terraform
-This is the repository for the LinkedIn Learning course Learning Terraform. The full course is available from [LinkedIn Learning][lil-course-url].
+Explanation of main.tf file:
 
-![Learning Terraform][lil-thumbnail-url] 
+1. **Data Sources: AWS AMI and VPC**
+   
+   ```hcl
+   data "aws_ami" "app_ami" {
+     ...
+   }
+   ```
 
-Terraform is a DevOps tool for declarative infrastructure—infrastructure as code. It simplifies and accelerates the configuration of cloud-based environments. In this course, instructor Josh Samuelson shows how to use Terraform to configure infrastructure and manage resources with Amazon Web Services (AWS). After demonstrating how to set up AWS for Terraform, Josh covers how Terraform manages your infrastructure, as well as how to use core Terraform commands. He also delves into more advanced topics, including how to leverage code modules from the Terraform registry and how to create your own modules. Upon wrapping up this course, you'll have the knowledge you need to efficiently define and manage infrastructure with this powerful tool.
+   This block fetches the ID of a specific Amazon Machine Image (AMI), which is a pre-configured virtual machine image. The filters ensure that we get the most recent image with a specific naming pattern and that it's an HVM virtualization type. The "data" keyword denotes this is a data source, not a direct resource.
 
-_See the readme file in the main branch for updated instructions and information._
-## Instructions
-This repository has branches for each of the videos in the course. You can use the branch pop up menu in github to switch to a specific branch and take a look at the course at that stage, or you can add `/tree/BRANCH_NAME` to the URL to go to the branch you want to access.
+   ```hcl
+   data "aws_vpc" "default" {
+     default = true
+   }
+   ```
 
-## Branches
-The branches are structured to correspond to the videos in the course. The naming convention is `CHAPTER#_MOVIE#`. As an example, the branch named `02_03` corresponds to the second chapter and the third video in that chapter. The code is built sequentally so each branch contains the completed code for that particular video and the starting code can be found in the previous video's branch.
+   This block fetches the ID of the default Virtual Private Cloud (VPC) in your AWS environment. VPCs allow you to provision a logically isolated section of the AWS Cloud.
 
-The `main` branch contains the starting code for the course and the `final` branch contains the completed code.
+2. **AWS Instance Resource**
 
-### Instructor
+   ```hcl
+   resource "aws_instance" "blog" {
+     ...
+   }
+   ```
 
-Josh Samuelson 
-                            
-DevOps Engineer
+   This block provisions an EC2 instance. The keyword "resource" indicates we're creating or managing an infrastructure resource. 
+   
+   - `ami`: Specifies which AMI to use for the instance. We refer to the data source for the AMI we fetched earlier.
+   - `instance_type`: Refers to the type or size of the instance, like `t2.micro`, which is passed as a variable.
+   - `vpc_security_group_ids`: List of security groups to be associated with the instance. Here, we reference the security group defined later in the file.
+   - `tags`: Assigns a name tag to the instance.
 
-                            
+3. **AWS Security Group Resource**
 
-Check out my other courses on [LinkedIn Learning](https://www.linkedin.com/learning/instructors/josh-samuelson).
+   ```hcl
+   resource "aws_security_group" "blog" {
+     ...
+   }
+   ```
 
-[lil-course-url]: https://www.linkedin.com/learning/learning-terraform-15575129?dApp=59033956
-[lil-thumbnail-url]: https://cdn.lynda.com/course/3087701/3087701-1666200696363-16x9.jpg
+   A security group acts as a virtual firewall to control inbound and outbound traffic. 
+
+   - `name`: Specifies the name of the security group.
+   - `description`: A brief description of the security group.
+   - `vpc_id`: Associates the security group with a specific VPC. Here, we reference the default VPC we fetched earlier.
+
+4. **AWS Security Group Rules**
+
+   ```hcl
+   resource "aws_security_group_rule" "blog_http_in" {
+     ...
+   }
+   ```
+
+   Security group rules define the allowed or denied traffic. The above rule allows inbound HTTP traffic on port 80.
+
+   ```hcl
+   resource "aws_security_group_rule" "blog_https_in" {
+     ...
+   }
+   ```
+
+   Similarly, this rule allows inbound HTTPS traffic on port 443.
+
+   ```hcl
+   resource "aws_security_group_rule" "blog_everything_out" {
+     ...
+   }
+   ```
+
+   This rule permits all outbound traffic from the instance.
+
+For each of these blocks:
+
+- The first quoted string following the block keyword (`data` or `resource`) is the **type** of resource we're working with. This is intrinsic to the kind of cloud resource you want and cannot be changed.
+  
+- The second quoted string is the **local name** for this resource. It's how you will refer to this particular resource block elsewhere in your Terraform code.
+
+- Inside the block `{...}` are the **configuration arguments** for the resource. The specific arguments and their meanings differ between types of resources. 
+
+In summary, this Terraform script will:
+1. Fetch information about a specific AMI and default VPC.
+2. Create an EC2 instance using the fetched AMI.
+3. Create a security group and attach it to the instance.
+4. Define rules in the security group to allow inbound HTTP/HTTPS traffic and allow all outbound traffic.
