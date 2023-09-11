@@ -374,3 +374,39 @@ Remember, Terraform's core principle is to determine the differences between the
 
 ------------------------------------------------
 
+Difference between Resource and Data Source:
+
+### 1. Resource:
+- **Think of it like a building block**.
+- A resource is something you want **Terraform to manage and create for you**. When you define a resource in a Terraform configuration, you are telling Terraform that you want this thing to exist.
+- Examples could be a virtual machine, a security group, a database instance, etc.
+- In code, it looks like:
+  ```hcl
+  resource "aws_instance" "example" {
+    // configurations for the AWS instance
+  }
+  ```
+  Here, Terraform will create an AWS instance based on the configurations you provide inside the block.
+
+### 2. Data Source:
+- **Think of it like a lookup or query**.
+- A data source allows Terraform to use data that's defined outside of Terraform, or data that's computed elsewhere.
+- Instead of creating something, it fetches or retrieves information about something that already exists.
+- Examples could be fetching information about an existing virtual machine, checking the latest available image/AMI, getting details of a domain, etc.
+- In code, it looks like:
+  ```hcl
+  data "aws_ami" "example" {
+    // configurations for the AMI lookup
+  }
+  ```
+  Here, Terraform won't create a new AMI. Instead, it will look up an existing AMI based on the configurations you provide.
+
+In summary:
+- **Resource**: "Hey Terraform, please make me this thing!"
+- **Data Source**: "Hey Terraform, can you give me information about this existing thing?" 
+
+I hope this simplifies the concepts for you!
+
+------------------------------------------------
+
+
